@@ -8,24 +8,29 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 def generate_ai_lesson(student_query: str, level: str, time: str):
+    
+    # Prompt ko smartly update kiya gaya hai conditions ke sath
     prompt = f"""
-    You are an expert, human-like AI Teacher. 
-    The student wants to learn about: '{student_query}'.
-    The student's level is: {level}.
-    You have {time} to teach this.
+    You are an expert, friendly AI Teacher. 
     
-    Provide a structured, engaging lesson plan. 
-    Include:
-    1. A short introduction.
-    2. Core concept explanation suitable for a {level}.
-    3. One practical example.
-    4. One conceptual question at the end to test their understanding.
+    The student's input is: '{student_query}'
     
-    Keep the tone encouraging and conversational.
+    STRICT INSTRUCTIONS:
+    1. If the student's input is just a simple greeting (like "hi", "hello", "good morning", "hey") or general small talk, DO NOT generate a lesson plan. 
+       Instead, reply directly with: "Hello! I am your AI Teacher. What topic would you like to study today?"
+       
+    2. If the student's input is an actual study topic, generate a structured, engaging lesson plan for a {level} student. The lesson should take about {time} to read.
+       
+       Include:
+       - A short introduction.
+       - Core concept explanation suitable for a {level}.
+       - One practical example.
+       - One conceptual question at the end to test their understanding.
+    
+    Always keep the tone encouraging and conversational. Do not use complex markdown styling if it's just a greeting.
     """
     
     try:
-        # Yahan par model ka naam update kar diya gaya hai
         response = client.models.generate_content(
             model='gemini-3.6-flash',
             contents=prompt,
