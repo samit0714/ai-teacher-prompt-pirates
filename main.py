@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-from llm_engine import generate_ai_lesson
+from llm_engine import generate_adaptive_lesson
 from video_engine import generate_avatar_video # Naya import
 
 app = FastAPI(title="AI Teacher Backend")
@@ -32,7 +32,7 @@ async def upload_material(file: UploadFile = File(...)):
 async def ask_teacher(student_query: str = Form(...), level: str = Form("Beginner"), time: str = Form("5 mins")):
     
     # 1. Text Generation (Gemini)
-    ai_generated_text = generate_ai_lesson(student_query, level, time)
+    ai_generated_text = generate_adaptive_lesson(student_query, level, time)
     
     # 2. Video Generation (D-ID) ke liye short script (Taaki fast chale)
     short_video_script = f"Hello! Welcome to your class on {student_query}. Let's dive in!"
