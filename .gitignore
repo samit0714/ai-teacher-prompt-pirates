@@ -1,0 +1,13 @@
+# Node
+node_modules/
+
+# Python
+venv/
+__pycache__/
+
+# Database & Secrets
+chroma_db/
+.env
+
+# OS files
+.DS_Store
