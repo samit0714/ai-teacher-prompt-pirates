@@ -50,11 +50,11 @@ async def ask_teacher(student_query: str = Form(...), level: str = Form("Beginne
     ai_generated_json = generate_adaptive_lesson(level, time, student_query, "", rag_data)
     
     # 3. Video Generation (D-ID)
-    #video_text = ai_generated_json.get("feedback_message", "Hello! Let's start our lesson.")
-    #real_video_url = generate_avatar_video(video_text)
+    video_text = ai_generated_json.get("avatar_audio_script", "Hello! Let's start our lesson.")
+    real_video_url = generate_avatar_video(video_text)
     
-    #if not real_video_url:
-    real_video_url = "https://www.w3schools.com/html/mov_bbb.mp4"
+    if not real_video_url:
+        real_video_url = "https://www.w3schools.com/html/mov_bbb.mp4"
     
     # 4. Final Response UI ko bhej do
     return {
