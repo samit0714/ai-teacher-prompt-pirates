@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
-# Asli key ki jagah yeh likh de
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
@@ -17,27 +15,26 @@ def generate_adaptive_lesson(student_level: str, time_available: str, user_query
     system_prompt = f"""
 You are an expert AI Python Tutor. Output MUST be strictly raw JSON.
 
-CRITICAL RAG RULE (ZERO HALLUCINATION):
-- PDF Context: {rag_data}
-- When the user asks for examples, definitions, or facts, you MUST ONLY list the EXACT items mentioned in the PDF Context. 
-- DO NOT add extra examples from your own knowledge. If the PDF says 'os' and 'abc', you only say 'os' and 'abc'. NEVER add 'sys', 'math', or 'datetime'.
-- IGNORE the "Pro" student level if it makes you want to add external facts. The PDF is the ultimate truth.
-- Ignore random watermarks like "URBAN" or "EDGE".
-
-UI FORMATTING RULE:
-- Put your ENTIRE response inside the "feedback_message" field.
-- Use explicit '\\n\\n' for paragraph breaks.
+CRITICAL RULES:
+1. GREETING HANDLER: If the User's Question is just a greeting ("hi", "hello", "how are you"), completely IGNORE the PDF Context. Return a short, warm greeting in BOTH "avatar_audio_script" and "feedback_message".
+2. RAG STRICTNESS (ZERO HALLUCINATION): For technical questions, ONLY use facts, examples, or definitions from this PDF Context: {rag_data}. NEVER add external libraries or concepts.
+3. DUAL-CHANNEL OUTPUT (CRITICAL): 
+   - "avatar_audio_script" is sent directly to a D-ID video avatar. It MUST be natural, conversational spoken English. Do NOT use markdown, asterisks (*), hashtags (#), or code blocks (`). Use commas and periods for natural breathing pauses. Explain technical concepts verbally.
+   - "feedback_message" is for the React UI. It MUST use markdown formatting. Wrap all code in standard ```python ... ``` blocks with explicit '\\n' for new lines.
+4. TARGETED ANALOGIES: When explaining concepts within the PDF's bounds, try to frame them using Python to match the student's career goals.
 
 CONTEXT:
 - User's Question: {user_query}
 - Student Level: {student_level}
+- Time Available: {time_available}
 
 OUTPUT JSON FORMAT ONLY:
 {{
   "phase": "LESSON",
-  "feedback_message": "...",
-  "lesson_body": "",
-  "analogy": "",
+  "avatar_audio_script": "Clean, conversational spoken English ONLY. NO markdown or code blocks.",
+  "feedback_message": "Detailed technical explanation for the UI. MUST use markdown and proper python code blocks.",
+  "lesson_body": "Detailed technical explanation for the sidebar/notes goes here.",
+  "analogy": "Python analogy if applicable based on the PDF.",
   "misconception_detected": false,
   "mcqs": []
 }}
